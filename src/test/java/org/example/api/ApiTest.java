@@ -78,7 +78,7 @@ public class ApiTest {
 
         Pet actual =
                 given()
-                        .pathParam("orderId", id) // заранее задаём переменную petId
+                        .pathParam("petId", id) // заранее задаём переменную petId
                     .when()
                         .get("/pet/{petId}") // которая подставится в путь ресурса перед выполнением запроса.
                         // после этого метода мы так же будем иметь уже ОТВЕТ от сервера.
@@ -102,13 +102,13 @@ public class ApiTest {
     public void tetDelete() throws IOException {
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
         given()
-                .pathParam("orderId", System.getProperty("orderId"))
+                .pathParam("petId", System.getProperty("petId"))
             .when()
                 .delete("/pet/{petId}")
             .then()
                 .statusCode(200);
         given()
-                .pathParam("orderId", System.getProperty("orderId"))
+                .pathParam("petId", System.getProperty("petId"))
              .when()
                 .get("/pet/{petId}")
              .then()

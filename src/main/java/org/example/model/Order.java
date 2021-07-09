@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class Order{
 
 	@SerializedName("orderId")
-	private long petId;
+	private int petId;
 
 	@SerializedName("quantity")
 	private int quantity;
@@ -22,11 +22,11 @@ public class Order{
 	@SerializedName("status")
 	private String status;
 
-	public void setPetId(long petId){
+	public void setPetId(int petId){
 		this.petId = petId;
 	}
 
-	public long getPetId(){
+	public int getPetId(){
 		return petId;
 	}
 

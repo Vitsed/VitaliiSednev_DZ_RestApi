@@ -5,19 +5,22 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.example.model.Order;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Random;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
 
 public class HomeTaskApiTest {
+
 
     @BeforeClass
     public void prepare() throws IOException {
@@ -36,12 +39,14 @@ public class HomeTaskApiTest {
         RestAssured.filters(new ResponseLoggingFilter());
     }
 
+
     @Test
-    public void checkObjectSave() {
+    public void checkOrderSave() {
         Order order = new Order();
-        int id = new Random().nextInt(100_000);
+        int id = Integer.parseInt(System.getProperty("orderId"));
+        int petId = Integer.parseInt(System.getProperty("petId"));
         order.setId(id);
-        order.setPetId(9223372000000139510l);
+        order.setPetId(petId);
         order.setQuantity(1);
         order.setShipDate(String.format("%1tFT%1$TH:%1$TM:%1$TSZ", new Date()));
         order.setStatus("placed");
@@ -75,7 +80,7 @@ public class HomeTaskApiTest {
         given()
                 .pathParam("orderId", System.getProperty("orderId"))
                 .when()
-                .get("/store/order/{orderId}")
+                .delete("/store/order/{orderId}")
                 .then()
                 .statusCode(200);
         given()
@@ -86,4 +91,60 @@ public class HomeTaskApiTest {
                 .statusCode(404);
     }
 
+    @Test
+    public void testGetStoreInventory() throws IOException {
+
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+        Map inventory = given()
+                .baseUri("https://petstore.swagger.io/v2/")
+                .header(new Header("api_key", System.getProperty("api.key")))
+                .accept(ContentType.JSON)
+                .log().all()
+                .when()
+                .get("/store/inventory")
+                .then()
+                .statusCode(200)
+                .log().all().extract().body().as(Map.class);
+
+
+        Assert.assertTrue(inventory.containsKey("sold"), "Key is absent");
+
+    }
+
+    @Ignore
+    @Test
+    public void testGetByOrderId() throws IOException {
+
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+        given()
+                .baseUri("https://petstore.swagger.io/v2/")
+                .header(new Header("api_key", System.getProperty("api.key")))
+                .accept(ContentType.JSON)
+                .log().all()
+                .when()
+                .pathParam("orderId", System.getProperty("orderId"))
+                .get("/store/order/{orderId}")
+                .then()
+                .statusCode(200)
+                .log().all();
+
+    }
+
+    @Ignore
+    @Test
+    public void testFindByStatus() throws IOException {
+
+        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+        given()
+                .baseUri("https://petstore.swagger.io/v2/")
+                .header(new Header("api_key", System.getProperty("api.key")))
+                .accept(ContentType.JSON)
+                .log().all()
+                .when()
+                .get("/pet/findByStatus?status=available")
+                .then()
+                .statusCode(200)
+                .log().all();
+
+    }
 }
