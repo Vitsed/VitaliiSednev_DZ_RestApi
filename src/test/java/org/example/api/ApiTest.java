@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 
+
 public class ApiTest {
     @BeforeClass
     public void prepare() throws IOException {
@@ -77,7 +78,7 @@ public class ApiTest {
 
         Pet actual =
                 given()
-                        .pathParam("petId", id) // заранее задаём переменную petId
+                        .pathParam("orderId", id) // заранее задаём переменную petId
                     .when()
                         .get("/pet/{petId}") // которая подставится в путь ресурса перед выполнением запроса.
                         // после этого метода мы так же будем иметь уже ОТВЕТ от сервера.
@@ -101,13 +102,13 @@ public class ApiTest {
     public void tetDelete() throws IOException {
         System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
         given()
-                .pathParam("petId", System.getProperty("petId"))
+                .pathParam("orderId", System.getProperty("orderId"))
             .when()
                 .delete("/pet/{petId}")
             .then()
                 .statusCode(200);
         given()
-                .pathParam("petId", System.getProperty("petId"))
+                .pathParam("orderId", System.getProperty("orderId"))
              .when()
                 .get("/pet/{petId}")
              .then()
